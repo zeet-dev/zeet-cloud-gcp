@@ -1,0 +1,110 @@
+repositories:
+  - name: "prometheus-community"
+    url: "https://prometheus-community.github.io/helm-charts"
+  - name: traefik
+    url: https://helm.traefik.io/traefik
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: kedacore
+    url: https://kedacore.github.io/charts
+
+releases:
+  - name: prometheus
+    namespace: prometheus
+    chart: prometheus-community/prometheus
+    version: 15.18.0
+    values:
+      - server:
+          persistentVolume:
+            size: 10Gi
+          strategy:
+            type: Recreate
+          resources:
+            limits:
+              cpu: 0.2
+              memory: 1Gi
+            requests:
+              cpu: 0.2
+              memory: 1Gi
+          ingress:
+            enabled: true
+            annotations:
+              kubernetes.io/ingress.class: traefik
+              traefik.ingress.kubernetes.io/router.tls: "true"
+              traefik.ingress.kubernetes.io/router.middlewares: "traefik-zeet-auth@kubernetescrd"
+            hosts:
+              - zeet-prometheus.{{ requiredEnv "CLUSTER_DOMAIN" }}
+            tls:
+              - hosts:
+                  - zeet-prometheus.{{ requiredEnv "CLUSTER_DOMAIN" }}
+        nodeExporter:
+          tolerations:
+            - effect: "NoSchedule"
+              operator: "Exists"
+        alertmanager:
+          strategy:
+            type: Recreate
+        kube-state-metrics:
+          metricLabelsAllowlist:
+            - 'pods=[*]'
+  - name: traefik
+    namespace: traefik
+    chart: traefik/traefik
+    version: v10.6.0
+    values:
+      - deployment:
+          replicas: 2
+        service:
+          annotations:
+            external-dns.alpha.kubernetes.io/hostname: {{ requiredEnv "CLUSTER_DOMAIN" }}.,*.{{ requiredEnv "CLUSTER_DOMAIN" }}.
+          spec:
+            externalTrafficPolicy: Local
+        logs:
+          general:
+            level: FATAL
+          access:
+            enabled: true
+        resources:
+          limits:
+            cpu: 0.2
+            memory: 1Gi
+          requests:
+            cpu: 0.2
+            memory: 1Gi
+        ingressClass:
+          enabled: true
+  - name: cert-manager
+    namespace: cert-manager
+    chart: jetstack/cert-manager
+    version: v1.5.4
+    values:
+      - installCRDs: true
+        serviceAccount:
+          name: cert-manager
+          annotations:
+            iam.gke.io/gcp-service-account: {{ requiredEnv "CLUSTER_NAME_SHORT" }}-cert-manager@{{ requiredEnv "GCP_PROJECT_ID" }}.iam.gserviceaccount.com
+        securityContext:
+          enabled: true
+          fsGroup: 1001 # required for service account token
+  - name: external-dns
+    namespace: external-dns
+    chart: bitnami/external-dns
+    version: 6.5.6
+    values:
+    - serviceAccount:
+        name: external-dns
+        annotations:
+          iam.gke.io/gcp-service-account: {{ requiredEnv "CLUSTER_NAME_SHORT" }}-external-dns@{{ requiredEnv "GCP_PROJECT_ID" }}.iam.gserviceaccount.com
+      sources:
+        - service
+      publishHostIP: true
+      txtOwnerId: external-dns
+      domainFilters:
+        - {{ requiredEnv "CLUSTER_DOMAIN" }}
+      provider: google
+  - name: keda
+    namespace: keda
+    chart: kedacore/keda
+    version: 2.7.2
