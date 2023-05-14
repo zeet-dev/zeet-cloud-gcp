@@ -29,8 +29,8 @@ output "cluster_name_short" {
 
 output "dns_zone" {
   value = {
-    zone_id : locals.zone_name,
-    name : locals.domain,
+    zone_id : local.zone_name,
+    name : local.domain,
     name_servers : module.dns.name_servers,
   }
 }
