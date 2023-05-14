@@ -14,7 +14,7 @@ terraform {
   }
 }
 
-local {
+locals {
   zone = "${var.region}-a"
 }
 
