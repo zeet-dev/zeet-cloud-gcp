@@ -14,6 +14,10 @@ terraform {
   }
 }
 
+local {
+  zone = "${var.region}-a"
+}
+
 provider "google" {
   project = var.project_id
   region  = var.region
@@ -174,7 +178,7 @@ module "gke" {
     {
       name                      = "e2-standard-2-system"
       machine_type              = "e2-standard-2"
-      node_locations            = var.zone
+      node_locations            = locals.zone
       min_count                 = 1
       max_count                 = 10
       local_ssd_count           = 0
@@ -190,7 +194,7 @@ module "gke" {
     {
       name                      = "e2-standard-2-guara-preemp"
       machine_type              = "e2-standard-2"
-      node_locations            = var.zone
+      node_locations            = locals.zone
       min_count                 = 0
       max_count                 = 10
       local_ssd_count           = 0
@@ -206,7 +210,7 @@ module "gke" {
     {
       name                      = "e2-standard-2-dedicated"
       machine_type              = "e2-standard-2"
-      node_locations            = var.zone
+      node_locations            = locals.zone
       min_count                 = 0
       max_count                 = 10
       local_ssd_count           = 0
@@ -222,7 +226,7 @@ module "gke" {
     ], [for size in local.gpu_sizes : {
       name                      = "${size}-nvidia-t4"
       machine_type              = size
-      node_locations            = var.zone
+      node_locations            = locals.zone
       min_count                 = 0
       max_count                 = 20
       local_ssd_count           = 0
@@ -240,7 +244,7 @@ module "gke" {
     [for size in local.v100_sizes : {
       name                      = "${size}-nvidia-v100"
       machine_type              = size
-      node_locations            = var.zone
+      node_locations            = locals.zone
       min_count                 = 0
       max_count                 = 20
       local_ssd_count           = 0
@@ -258,7 +262,7 @@ module "gke" {
     [for size in local.a100_sizes : {
       name                      = "${size}-nvidia-a100"
       machine_type              = size
-      node_locations            = var.zone
+      node_locations            = locals.zone
       min_count                 = 0
       max_count                 = 20
       local_ssd_count           = 0

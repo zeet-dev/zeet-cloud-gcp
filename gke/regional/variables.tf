@@ -8,10 +8,6 @@ variable "region" {
   description = "The GCP region"
 }
 
-variable "zone" {
-  type = string
-}
-
 variable "cluster_id" {
   type = string
 }
