@@ -8,7 +8,7 @@ terraform {
     }
 
     google-beta = {
-      source  = "hashicorp/google"
+      source  = "hashicorp/google-beta"
       version = "~> 4.15.0"
     }
   }
@@ -82,6 +82,7 @@ module "vpc" {
       subnet_name   = "zeet-${var.cluster_name}-subnet-01"
       subnet_ip     = "10.0.0.0/19"
       subnet_region = var.region
+      subnet_private_access = true
     }
   ]
 
@@ -150,6 +151,7 @@ module "gke" {
   ip_range_services = "zeet-${var.cluster_name}-subnet-01-services"
 
   horizontal_pod_autoscaling = true
+  gce_pd_csi_driver          = true
   enable_tpu                 = var.enable_tpu
 
   http_load_balancing = false
