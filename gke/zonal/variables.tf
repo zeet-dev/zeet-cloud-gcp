@@ -28,15 +28,17 @@ variable "user_id" {
   type = string
 }
 
-variable "enable_gpu" {
-  type = bool
-}
-
 variable "enable_tpu" {
   type = bool
 }
 
+# the following two variables determins whether to turn on gpu support if the zone has them
 variable "enable_a100" {
+  type    = bool
+  default = false
+}
+
+variable "enable_l4" {
   type    = bool
   default = false
 }
