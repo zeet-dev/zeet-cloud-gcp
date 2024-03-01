@@ -37,6 +37,11 @@ variable "enable_tpu" {
 }
 
 variable "enable_a100" {
-  type    = bool
+  type = bool
+  default = false
+}
+
+variable "enable_l4" {
+  type = bool
   default = false
 }
