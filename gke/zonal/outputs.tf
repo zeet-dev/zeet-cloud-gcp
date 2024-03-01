@@ -26,3 +26,7 @@ output "cluster_name" {
 output "cluster_name_short" {
   value = local.cluster_name_short
 }
+
+output "cluster_ns_records" {
+  value = module.dns.name_servers
+}

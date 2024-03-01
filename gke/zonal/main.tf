@@ -244,7 +244,7 @@ locals {
     ] : [],
   }
 
-  gpu_instances = { for gpu in lookup(local.available_gpu_in_zones, var.zone, []) : "${gpu}" =>
+  gpu_instances = { for gpu in local.available_gpu_in_zones[var.zone] : "${gpu}" =>
     can(local.reserved_sizes[gpu]) ? local.reserved_sizes[gpu] : local.generic_gpu_instance_sizes
   }
 }
