@@ -6,6 +6,13 @@ resource "google_project_iam_member" "gke" {
   member = "serviceAccount:${module.gke.service_account}"
 }
 
+resource "google_project_iam_member" "gke_artifactregistry" {
+  project = var.project_id
+  role    = "roles/artifactregistry.reader"
+
+  member = "serviceAccount:${module.gke.service_account}"
+}
+
 locals {
   cluster_name_short = "${substr(var.cluster_name, 0, 8)}-${substr(var.cluster_id, 0, 4)}"
 }
