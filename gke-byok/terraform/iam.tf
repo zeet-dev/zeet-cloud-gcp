@@ -8,7 +8,7 @@ module "workload-identity-cert-manager" {
 
   gcp_sa_name = "${local.cluster_name_short}-cert-manager"
   name        = "cert-manager"
-  namespace   = "cert-manager"
+  namespace   = var.cert_manager_namespace
   project_id  = var.project_id
   roles       = ["roles/dns.admin"]
 
@@ -22,7 +22,7 @@ module "workload-identity-external-dns" {
 
   gcp_sa_name = "${local.cluster_name_short}-external-dns"
   name        = "external-dns"
-  namespace   = "external-dns"
+  namespace   = var.external_dns_namespace
   project_id  = var.project_id
   roles       = ["roles/dns.admin"]
 

@@ -30,3 +30,14 @@ variable "cluster_location" {
 variable "cluster_domain" {
   type = string
 }
+
+
+variable "cert_manager_namespace" {
+  type = string
+  default = "cert-manager"
+}
+
+variable "external_dns_namespace" {
+  type = string
+  default = "external-dns"
+}
